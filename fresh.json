@@ -1,0 +1,134 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This is my first cf template",
+    "Parameters": {
+        "myvpc": {
+            "Description": "this is my vpc",
+            "Type": "String",
+            "Default": "192.168.0.0/16"
+        },
+        "mysub1": {
+            "Description": "this is my subnet1",
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "mysub2": {
+            "Description": "this is my subnet2",
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "mysub3": {
+            "Description": "this is my subnet3",
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        }
+    },
+    "Resources": {
+        "myvpc1": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "myvpc"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "hello"
+                    }
+                ]
+            }
+        },
+        "mysubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "myvpc1"
+                },
+                "CidrBlock": "192.168.0.0/24",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "first-subnet"
+                    }
+                ]
+            }
+        },
+        "mysubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "myvpc1"
+                },
+                "CidrBlock": "192.168.1.0/24",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "second-subnet"
+                    }
+                ]
+            }
+        },
+        "mysubnet3": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "myvpc1"
+                },
+                "CidrBlock": "192.168.2.0/24",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "third-subnet"
+                    }
+                ]
+            }
+        },
+        "mygateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "name",
+                        "Value": "mygatewaytag"
+                    }
+                ]
+            }
+        },
+        "AttachGateway": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "myvpc1"
+                },
+                "InternetGatewayId": {
+                    "Ref": "mygateway"
+                }
+            }
+        },
+        "myroutetable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "myvpc1"
+                },
+                "Tags": [
+                    {
+                        "Key": "name",
+                        "Value": "routetable"
+                    }
+                ]
+            }
+        },
+        "routeName": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "myroutetable"
+                },
+                "DestinationCidrBlock": [
+                    "0.0.0.0/0"
+                ],
+                "GatewayId": {
+                    "Ref": "mygateway"
+                }
+            }
+        }
+    }
+}
